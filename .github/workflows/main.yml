@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - "*"
+
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build:
+    uses: HFranz/github-workflows/.github/workflows/build-and-deploy-to-wporg.yml@main
+    with:
+      plugin-slug: sev-calculate-price-for-booking-calendar
+      # Not live on wp.org yet - a tag push would otherwise try (and fail) to
+      # deploy to an SVN repo that doesn't exist. Flip to true once the
+      # initial wp.org submission is approved and SVN_USERNAME/SVN_PASSWORD
+      # secrets are set on this repo.
+      deploy: false
+    secrets: inherit
