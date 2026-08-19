@@ -2,22 +2,22 @@
 /**
  * Booking Calendar (WPBC) integration.
  *
- * Booking Calendar Free ships a "Cost Hint" form field ([cost_hint]) in its
- * form builder, but the actual per-day price calculation behind it is a
- * paid "Business Medium+" feature (see
- * includes/page-form-builder/field-packs/hint-cost_hint/ and
- * includes/_front_end/date-hints.php in the Booking Calendar plugin: its
- * WPBC_Free_Date_Hints class explicitly does not compute a cost hint value).
- * On the Free version, [cost_hint] in a booking form is therefore never
- * replaced and shows up literally.
+ * Booking Calendar Free ships "Cost Hint" and "Deposit Hint" form fields
+ * ([cost_hint], [deposit_hint]) in its form builder, but the actual price
+ * calculation behind them is a paid "Business Medium+" feature (see
+ * includes/page-form-builder/field-packs/hint-cost_hint/,
+ * hint-deposit_hint/ and includes/_front_end/date-hints.php in the Booking
+ * Calendar plugin: its WPBC_Free_Date_Hints class explicitly does not
+ * compute either value). On the Free version, these shortcodes in a
+ * booking form are therefore never replaced and show up literally.
  *
  * This backfills exactly that gap using the same mechanism Booking Calendar
  * itself uses for its free date hints (days_number_hint & co.):
- *   - the [cost_hint] shortcode in the rendered form is replaced with a
- *     placeholder <span>/<input>, keyed by the current booking resource,
+ *   - each shortcode in the rendered form is replaced with a placeholder
+ *     <span>/<input>, keyed by the current booking resource,
  *   - once dates are selected, Booking Calendar's own AJAX round-trip
  *     ("wpdev_ajax_show_cost" / action=CALCULATE_THE_COST") is reused to
- *     recalculate and push the value into that placeholder, via Booking
+ *     recalculate and push the values into those placeholders, via Booking
  *     Calendar's own wpbc_free_date_hints__apply() JS helper.
  *
  * @package sevmatic
@@ -25,7 +25,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
-const SEVMATIC_BCP_HINT_TOKEN = 'cost_hint';
+const SEVMATIC_BCP_COST_HINT_TOKEN    = 'cost_hint';
+const SEVMATIC_BCP_DEPOSIT_HINT_TOKEN = 'deposit_hint';
 
 /**
  * Whether Booking Calendar's hook system (needed by everything below) is
@@ -47,8 +48,8 @@ add_action(
 			return;
 		}
 
-		add_bk_filter( 'wpbc_update_bookingform_content__after_load', 'sevmatic_bcp_replace_cost_hint_in_form' );
-		add_filter( 'wpbc_booking_form_content__after_load', 'sevmatic_bcp_replace_cost_hint_in_form', 10, 3 );
+		add_bk_filter( 'wpbc_update_bookingform_content__after_load', 'sevmatic_bcp_replace_price_hints_in_form' );
+		add_filter( 'wpbc_booking_form_content__after_load', 'sevmatic_bcp_replace_price_hints_in_form', 10, 3 );
 
 		add_bk_action( 'wpdev_ajax_show_cost', 'sevmatic_bcp_ajax_show_price' );
 	},
@@ -56,11 +57,8 @@ add_action(
 );
 
 /**
- * Replaces the [cost_hint] shortcode in a rendered booking form with a
- * placeholder span/hidden-input pair, following the exact same markup
- * convention Booking Calendar's own free date hints use, so the existing
- * `wpbc_free_date_hints__apply()` JS helper (and its `#cost_hint_tip{id}`
- * selectors) picks it up without any JS of our own.
+ * Replaces the [cost_hint] and [deposit_hint] shortcodes in a rendered
+ * booking form with placeholder span/hidden-input pairs.
  *
  * @param string $form_content Booking form markup.
  * @param int    $resource_id  Booking resource ("type") ID.
@@ -68,26 +66,47 @@ add_action(
  *
  * @return string
  */
-function sevmatic_bcp_replace_cost_hint_in_form( string $form_content, int $resource_id = 1, string $form_slug = 'standard' ): string {
+function sevmatic_bcp_replace_price_hints_in_form( string $form_content, int $resource_id = 1, string $form_slug = 'standard' ): string {
 
-	if ( false === strpos( $form_content, '[' . SEVMATIC_BCP_HINT_TOKEN . ']' ) ) {
+	foreach ( array( SEVMATIC_BCP_COST_HINT_TOKEN, SEVMATIC_BCP_DEPOSIT_HINT_TOKEN ) as $token ) {
+		$form_content = sevmatic_bcp_replace_hint_token_in_form( $form_content, $token, (int) $resource_id );
+	}
+
+	return $form_content;
+}
+
+/**
+ * Replaces a single hint shortcode (e.g. [cost_hint]) with a placeholder
+ * span/hidden-input pair, following the exact same markup convention
+ * Booking Calendar's own free date hints use, so the existing
+ * `wpbc_free_date_hints__apply()` JS helper (and its `#{token}_tip{id}`
+ * selectors) picks it up without any JS of our own.
+ *
+ * @param string $form_content Booking form markup.
+ * @param string $token        Hint token, e.g. "cost_hint" (without brackets).
+ * @param int    $resource_id  Booking resource ("type") ID.
+ *
+ * @return string
+ */
+function sevmatic_bcp_replace_hint_token_in_form( string $form_content, string $token, int $resource_id ): string {
+
+	if ( false === strpos( $form_content, '[' . $token . ']' ) ) {
 		return $form_content;
 	}
 
-	$resource_id = (int) $resource_id;
-	$span_class  = SEVMATIC_BCP_HINT_TOKEN . '_tip' . $resource_id;
-	$input_name  = SEVMATIC_BCP_HINT_TOKEN . $resource_id;
-	$default     = '...';
+	$span_class = $token . '_tip' . $resource_id;
+	$input_name = $token . $resource_id;
+	$default    = '...';
 
 	$first_html = '<span class="wpbc_field_hint wpbc_free_date_hint" id="' . esc_attr( $span_class ) . '">' . esc_html( $default ) . '</span>'
 		. '<input class="wpbc_field_hint wpbc_free_date_hint" id="' . esc_attr( $input_name ) . '" name="' . esc_attr( $input_name ) . '" value="' . esc_attr( $default ) . '" style="display:none;" type="text" />';
 
-	$pattern      = '/\[' . preg_quote( SEVMATIC_BCP_HINT_TOKEN, '/' ) . '\]/';
+	$pattern      = '/\[' . preg_quote( $token, '/' ) . '\]/';
 	$form_content = preg_replace( $pattern, $first_html, $form_content, 1 );
 
 	$other_html = '<span class="wpbc_field_hint wpbc_free_date_hint ' . esc_attr( $span_class ) . '">' . esc_html( $default ) . '</span>';
 
-	return str_replace( '[' . SEVMATIC_BCP_HINT_TOKEN . ']', $other_html, $form_content );
+	return str_replace( '[' . $token . ']', $other_html, $form_content );
 }
 
 /**
@@ -95,8 +114,9 @@ function sevmatic_bcp_replace_cost_hint_in_form( string $form_content, int $reso
  * on every "CALCULATE_THE_COST" AJAX request Booking Calendar's own
  * JS (wpbc-free-date-hints.js) already sends whenever the selected dates
  * or form fields change. Reads the same $_POST payload Booking Calendar's
- * own handler reads, calculates the price, and prints a small script that
- * pushes it into the placeholder from sevmatic_bcp_replace_cost_hint_in_form().
+ * own handler reads, calculates price and deposit, and prints a small
+ * script that pushes them into the placeholders from
+ * sevmatic_bcp_replace_hint_token_in_form().
  *
  * @return void
  */
@@ -116,12 +136,27 @@ function sevmatic_bcp_ajax_show_price(): void {
 	// phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing
 	$form_data = isset( $_POST['form'] ) ? sanitize_text_field( wp_unslash( $_POST['form'] ) ) : '';
 
-	// Nothing selected yet: leave whatever the placeholder currently shows (its initial "..." default) alone.
+	// Nothing selected yet: leave whatever the placeholders currently show (their initial "..." default) alone.
 	if ( ! sevmatic_bcp_has_date_selection( $selected_dates ) ) {
 		return;
 	}
 
-	sevmatic_bcp_print_price_update_script( $resource_id, sevmatic_bcp_calculate_formatted_price_for_selection( $selected_dates, $resource_id, $form_data ) );
+	$days = sevmatic_bcp_count_selected_days( $selected_dates, $resource_id, $form_data );
+
+	if ( null === $days ) {
+		return;
+	}
+
+	$settings = sevmatic_bcp_get_settings();
+	$total    = sevmatic_bcp_calculate_total_price( $settings['tiers'], $days );
+	$deposit  = sevmatic_bcp_calculate_deposit( $total, $settings['deposit_mode'], $settings['deposit_value'] );
+
+	$hints = array(
+		SEVMATIC_BCP_COST_HINT_TOKEN    => null !== $total ? sevmatic_bcp_format_price( $total, $settings ) : '',
+		SEVMATIC_BCP_DEPOSIT_HINT_TOKEN => null !== $deposit ? sevmatic_bcp_format_price( $deposit, $settings ) : '',
+	);
+
+	sevmatic_bcp_print_price_update_script( $resource_id, $hints );
 }
 
 /**
@@ -142,60 +177,45 @@ function sevmatic_bcp_has_date_selection( string $selected_dates ): bool {
 }
 
 /**
- * Calculates and formats the price for a Booking Calendar date selection.
- *
- * Once dates *are* selected, this always returns a display string — an
- * empty one when the day count isn't covered by any configured price tier —
- * so the placeholder never keeps showing a stale price from a previous,
- * now-superseded selection.
+ * Counts the number of selected booking days for a Booking Calendar date
+ * selection, using Booking Calendar's own date parser.
  *
  * @param string $selected_dates Selected dates, in Booking Calendar's dd.mm.yyyy CSV/range format.
  * @param int    $resource_id    Booking resource ID.
  * @param string $form_data      Serialized booking form data (passed through to Booking Calendar's own parser).
  *
- * @return string Formatted price, or an empty string when it can't be calculated.
+ * @return int|null Number of days, or null when it can't be determined.
  */
-function sevmatic_bcp_calculate_formatted_price_for_selection( string $selected_dates, int $resource_id, string $form_data ): string {
+function sevmatic_bcp_count_selected_days( string $selected_dates, int $resource_id, string $form_data ): ?int {
 
 	$dates_in_diff_formats = wpbc_get_dates_in_diff_formats( trim( $selected_dates ), $resource_id, $form_data );
 
 	if ( empty( $dates_in_diff_formats['array'] ) || ! is_array( $dates_in_diff_formats['array'] ) ) {
-		return '';
+		return null;
 	}
 
 	$days = count( array_values( array_unique( array_filter( $dates_in_diff_formats['array'] ) ) ) );
 
-	if ( $days <= 0 ) {
-		return '';
-	}
-
-	$settings = sevmatic_bcp_get_settings();
-	$total    = sevmatic_bcp_calculate_total_price( $settings['tiers'], $days );
-
-	if ( null === $total ) {
-		return '';
-	}
-
-	return sevmatic_bcp_format_price( $total, $settings );
+	return $days > 0 ? $days : null;
 }
 
 /**
- * Prints the JS snippet that applies the calculated price to the
- * placeholder, reusing Booking Calendar's own wpbc_free_date_hints__apply()
+ * Prints the JS snippet that applies the calculated hint values to their
+ * placeholders, reusing Booking Calendar's own wpbc_free_date_hints__apply()
  * helper when present (same helper WPBC_Free_Date_Hints relies on), with a
  * plain-jQuery fallback matching Booking Calendar's own fallback shape.
  *
- * @param int    $resource_id      Booking resource ID.
- * @param string $formatted_price  Already-formatted price string.
+ * @param int                  $resource_id Booking resource ID.
+ * @param array<string,string> $hints       Hint token => already-formatted value.
  *
  * @return void
  */
-function sevmatic_bcp_print_price_update_script( int $resource_id, string $formatted_price ): void {
+function sevmatic_bcp_print_price_update_script( int $resource_id, array $hints ): void {
 	?>
 	<script type="text/javascript">
 		(function ( w, $ ) {
 			var resourceId = <?php echo wp_json_encode( $resource_id ); ?>;
-			var hints = <?php echo wp_json_encode( array( SEVMATIC_BCP_HINT_TOKEN => $formatted_price ) ); ?>;
+			var hints = <?php echo wp_json_encode( $hints ); ?>;
 
 			if ( w.wpbc_free_date_hints__apply ) {
 				w.wpbc_free_date_hints__apply( resourceId, hints );

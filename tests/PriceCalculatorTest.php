@@ -96,6 +96,27 @@ final class PriceCalculatorTest extends TestCase {
 		$this->assertNull( sevmatic_bcp_calculate_total_price( $tiers, 2 ) );
 	}
 
+	public function test_deposit_fixed_mode_ignores_the_total_price(): void {
+		$this->assertSame( 50.0, sevmatic_bcp_calculate_deposit( 40.0, 'fixed', 50.0 ) );
+		$this->assertSame( 50.0, sevmatic_bcp_calculate_deposit( null, 'fixed', 50.0 ) );
+	}
+
+	public function test_deposit_percentage_mode_is_a_share_of_the_total_price(): void {
+		$this->assertSame( 8.0, sevmatic_bcp_calculate_deposit( 40.0, 'percentage', 20.0 ) );
+	}
+
+	public function test_deposit_percentage_mode_is_null_without_a_total_price(): void {
+		$this->assertNull( sevmatic_bcp_calculate_deposit( null, 'percentage', 20.0 ) );
+	}
+
+	public function test_deposit_is_null_for_an_unknown_mode(): void {
+		$this->assertNull( sevmatic_bcp_calculate_deposit( 40.0, 'bogus', 20.0 ) );
+	}
+
+	public function test_deposit_fixed_mode_clamps_negative_values_to_zero(): void {
+		$this->assertSame( 0.0, sevmatic_bcp_calculate_deposit( 40.0, 'fixed', -5.0 ) );
+	}
+
 	public function test_format_price_uses_german_style_separators_by_default(): void {
 		$format = array(
 			'decimals'           => 2,

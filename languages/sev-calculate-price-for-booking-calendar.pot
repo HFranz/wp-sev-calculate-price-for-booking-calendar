@@ -2,14 +2,14 @@
 # This file is distributed under the GPL-2.0-or-later.
 msgid ""
 msgstr ""
-"Project-Id-Version: SEV Calculate Price for Booking Calendar 1.0.0\n"
+"Project-Id-Version: SEV Calculate Price for Booking Calendar 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sev-calculate-price-for-booking-calendar\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T15:11:53+00:00\n"
+"POT-Creation-Date: 2026-08-19T15:22:15+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: sev-calculate-price-for-booking-calendar\n"
@@ -21,7 +21,7 @@ msgstr ""
 
 #. Description of the plugin
 #: sev-calculate-price-for-booking-calendar.php
-msgid "Calculates and displays the booking price for Booking Calendar (WPBC) based on the number of selected days and configurable per-day price tiers, filling the [cost_hint] shortcode that Booking Calendar Free leaves inactive."
+msgid "Calculates and displays the booking price and deposit for Booking Calendar (WPBC) based on the number of selected days, configurable per-day price tiers, and a fixed or percentage-based deposit, filling the [cost_hint] and [deposit_hint] shortcodes that Booking Calendar Free leaves inactive."
 msgstr ""
 
 #. Author of the plugin
@@ -57,7 +57,7 @@ msgid "The \"Booking Calendar\" plugin is not active. Price calculation is curre
 msgstr ""
 
 #: includes/admin-settings.php:155
-msgid "Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier's rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder."
+msgid "Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier's rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder, and the deposit via the [deposit_hint] placeholder."
 msgstr ""
 
 #: includes/admin-settings.php:165
@@ -85,30 +85,58 @@ msgid "Leave \"To Day\" empty for \"unlimited\" (e.g. \"20 days or more\")."
 msgstr ""
 
 #: includes/admin-settings.php:193
-msgid "Price Display"
+msgid "Deposit"
 msgstr ""
 
-#: includes/admin-settings.php:198
-msgid "Decimals"
+#: includes/admin-settings.php:196
+msgid "Optional deposit shown via the [deposit_hint] placeholder, as either a fixed amount or a percentage of the calculated price."
+msgstr ""
+
+#: includes/admin-settings.php:201
+msgid "Deposit Type"
 msgstr ""
 
 #: includes/admin-settings.php:207
+msgid "Percentage of the price"
+msgstr ""
+
+#: includes/admin-settings.php:213
+msgid "Fixed amount"
+msgstr ""
+
+#: includes/admin-settings.php:220
+msgid "Deposit Value"
+msgstr ""
+
+#: includes/admin-settings.php:226
+msgid "A percentage (0-100) or a fixed price amount, depending on the deposit type selected above."
+msgstr ""
+
+#: includes/admin-settings.php:232
+msgid "Price Display"
+msgstr ""
+
+#: includes/admin-settings.php:237
+msgid "Decimals"
+msgstr ""
+
+#: includes/admin-settings.php:246
 msgid "Decimal Separator"
 msgstr ""
 
-#: includes/admin-settings.php:216
+#: includes/admin-settings.php:255
 msgid "Thousand Separator"
 msgstr ""
 
-#: includes/admin-settings.php:225
+#: includes/admin-settings.php:264
 msgid "Prefix"
 msgstr ""
 
-#: includes/admin-settings.php:234
+#: includes/admin-settings.php:273
 msgid "Suffix"
 msgstr ""
 
-#: includes/admin-settings.php:243
+#: includes/admin-settings.php:282
 msgid "Save"
 msgstr ""
 

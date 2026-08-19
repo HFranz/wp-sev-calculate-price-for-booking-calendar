@@ -153,7 +153,7 @@ function sevmatic_bcp_render_settings_page(): void {
 		<p>
 			<?php
 			esc_html_e(
-				'Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier\'s rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder.',
+				'Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier\'s rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder, and the deposit via the [deposit_hint] placeholder.',
 				'sev-calculate-price-for-booking-calendar'
 			);
 			?>
@@ -189,6 +189,45 @@ function sevmatic_bcp_render_settings_page(): void {
 			<p class="description">
 				<?php esc_html_e( 'Leave "To Day" empty for "unlimited" (e.g. "20 days or more").', 'sev-calculate-price-for-booking-calendar' ); ?>
 			</p>
+
+			<h2><?php esc_html_e( 'Deposit', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
+
+			<p class="description">
+				<?php esc_html_e( 'Optional deposit shown via the [deposit_hint] placeholder, as either a fixed amount or a percentage of the calculated price.', 'sev-calculate-price-for-booking-calendar' ); ?>
+			</p>
+
+			<table class="form-table">
+				<tr>
+					<th scope="row"><?php esc_html_e( 'Deposit Type', 'sev-calculate-price-for-booking-calendar' ); ?></th>
+					<td>
+						<fieldset>
+							<label>
+								<input type="radio" name="sevmatic_bcp[deposit_mode]" value="percentage"
+									<?php checked( 'percentage', $settings['deposit_mode'] ); ?> />
+								<?php esc_html_e( 'Percentage of the price', 'sev-calculate-price-for-booking-calendar' ); ?>
+							</label>
+							<br />
+							<label>
+								<input type="radio" name="sevmatic_bcp[deposit_mode]" value="fixed"
+									<?php checked( 'fixed', $settings['deposit_mode'] ); ?> />
+								<?php esc_html_e( 'Fixed amount', 'sev-calculate-price-for-booking-calendar' ); ?>
+							</label>
+						</fieldset>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<label for="sevmatic-bcp-deposit-value"><?php esc_html_e( 'Deposit Value', 'sev-calculate-price-for-booking-calendar' ); ?></label>
+					</th>
+					<td>
+						<input type="number" min="0" step="0.01" id="sevmatic-bcp-deposit-value"
+							   name="sevmatic_bcp[deposit_value]" value="<?php echo esc_attr( (string) $settings['deposit_value'] ); ?>" class="small-text" />
+						<p class="description">
+							<?php esc_html_e( 'A percentage (0-100) or a fixed price amount, depending on the deposit type selected above.', 'sev-calculate-price-for-booking-calendar' ); ?>
+						</p>
+					</td>
+				</tr>
+			</table>
 
 			<h2><?php esc_html_e( 'Price Display', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
 

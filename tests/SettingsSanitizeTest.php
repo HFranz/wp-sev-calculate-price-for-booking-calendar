@@ -127,6 +127,52 @@ final class SettingsSanitizeTest extends TestCase {
 		$this->assertSame( 0, $settings['decimals'] );
 	}
 
+	public function test_deposit_mode_and_value_are_sanitized(): void {
+		$settings = sevmatic_bcp_sanitize_settings(
+			array(
+				'deposit_mode'  => 'fixed',
+				'deposit_value' => '25',
+			)
+		);
+
+		$this->assertSame( 'fixed', $settings['deposit_mode'] );
+		$this->assertSame( 25.0, $settings['deposit_value'] );
+	}
+
+	public function test_deposit_mode_falls_back_to_default_when_invalid(): void {
+		$settings = sevmatic_bcp_sanitize_settings( array( 'deposit_mode' => 'not-a-real-mode' ) );
+
+		$this->assertSame( sevmatic_bcp_get_default_settings()['deposit_mode'], $settings['deposit_mode'] );
+	}
+
+	public function test_deposit_percentage_is_clamped_to_100(): void {
+		$settings = sevmatic_bcp_sanitize_settings(
+			array(
+				'deposit_mode'  => 'percentage',
+				'deposit_value' => '150',
+			)
+		);
+
+		$this->assertSame( 100.0, $settings['deposit_value'] );
+	}
+
+	public function test_deposit_fixed_amount_is_not_clamped_to_100(): void {
+		$settings = sevmatic_bcp_sanitize_settings(
+			array(
+				'deposit_mode'  => 'fixed',
+				'deposit_value' => '150',
+			)
+		);
+
+		$this->assertSame( 150.0, $settings['deposit_value'] );
+	}
+
+	public function test_negative_deposit_value_is_clamped_to_zero(): void {
+		$settings = sevmatic_bcp_sanitize_settings( array( 'deposit_value' => '-10' ) );
+
+		$this->assertSame( 0.0, $settings['deposit_value'] );
+	}
+
 	public function test_prefix_and_suffix_preserve_a_leading_or_trailing_space(): void {
 		// sanitize_text_field()/wp_strip_all_tags() would trim() this away,
 		// silently running the number and suffix together (e.g. "30,00Euro").

@@ -1,14 +1,14 @@
 msgid ""
 msgstr ""
-"Project-Id-Version: SEV Calculate Price for Booking Calendar 1.0.0\n"
+"Project-Id-Version: SEV Calculate Price for Booking Calendar 1.1.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/sev-calculate-price-for-booking-calendar\n"
 "Last-Translator: sevmatic\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T15:11:53+00:00\n"
-"PO-Revision-Date: 2026-08-19T15:11:53+00:00\n"
+"POT-Creation-Date: 2026-08-19T15:22:15+00:00\n"
+"PO-Revision-Date: 2026-08-19T15:22:15+00:00\n"
 "Language: de_DE\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Domain: sev-calculate-price-for-booking-calendar\n"
@@ -20,8 +20,8 @@ msgstr "SEV Calculate Price for Booking Calendar"
 
 #. Description of the plugin
 #: sev-calculate-price-for-booking-calendar.php
-msgid "Calculates and displays the booking price for Booking Calendar (WPBC) based on the number of selected days and configurable per-day price tiers, filling the [cost_hint] shortcode that Booking Calendar Free leaves inactive."
-msgstr "Berechnet und zeigt den Buchungspreis für Booking Calendar (WPBC) basierend auf der Anzahl der ausgewählten Tage und konfigurierbaren Preisstufen pro Tag an und füllt damit den [cost_hint]-Shortcode, den Booking Calendar Free inaktiv lässt."
+msgid "Calculates and displays the booking price and deposit for Booking Calendar (WPBC) based on the number of selected days, configurable per-day price tiers, and a fixed or percentage-based deposit, filling the [cost_hint] and [deposit_hint] shortcodes that Booking Calendar Free leaves inactive."
+msgstr "Berechnet und zeigt den Buchungspreis und die Kaution für Booking Calendar (WPBC) an, basierend auf der Anzahl der ausgewählten Tage, konfigurierbaren Preisstufen pro Tag und einer festen oder prozentualen Kaution, und füllt damit die Shortcodes [cost_hint] und [deposit_hint], die Booking Calendar Free inaktiv lässt."
 
 #. Author of the plugin
 #: sev-calculate-price-for-booking-calendar.php
@@ -56,8 +56,8 @@ msgid "The \"Booking Calendar\" plugin is not active. Price calculation is curre
 msgstr "Das Plugin \"Booking Calendar\" ist nicht aktiv. Die Preisberechnung ist aktuell inaktiv."
 
 #: includes/admin-settings.php:155
-msgid "Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier's rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder."
-msgstr "Definiere hier, wie viel eine Buchung pro Tag kostet. Die Anzahl der gebuchten Tage bestimmt, welche Preisstufe verwendet wird, und der Gesamtpreis ergibt sich aus dem Satz dieser Stufe multipliziert mit der Tagesanzahl. Der berechnete Preis wird im Buchungsformular über den Platzhalter [cost_hint] angezeigt."
+msgid "Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier's rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder, and the deposit via the [deposit_hint] placeholder."
+msgstr "Definiere hier, wie viel eine Buchung pro Tag kostet. Die Anzahl der gebuchten Tage bestimmt, welche Preisstufe verwendet wird, und der Gesamtpreis ergibt sich aus dem Satz dieser Stufe multipliziert mit der Tagesanzahl. Der berechnete Preis wird im Buchungsformular über den Platzhalter [cost_hint] angezeigt, die Kaution über den Platzhalter [deposit_hint]."
 
 #: includes/admin-settings.php:165
 msgid "Price Tiers"
@@ -84,30 +84,58 @@ msgid "Leave \"To Day\" empty for \"unlimited\" (e.g. \"20 days or more\")."
 msgstr "\"Bis Tag\" leer lassen für \"unbegrenzt\" (z. B. \"ab 20 Tagen\")."
 
 #: includes/admin-settings.php:193
+msgid "Deposit"
+msgstr "Kaution"
+
+#: includes/admin-settings.php:196
+msgid "Optional deposit shown via the [deposit_hint] placeholder, as either a fixed amount or a percentage of the calculated price."
+msgstr "Optionale Kaution, die über den Platzhalter [deposit_hint] angezeigt wird, entweder als fester Betrag oder als Prozentsatz des berechneten Preises."
+
+#: includes/admin-settings.php:201
+msgid "Deposit Type"
+msgstr "Kautionsart"
+
+#: includes/admin-settings.php:207
+msgid "Percentage of the price"
+msgstr "Prozentsatz vom Preis"
+
+#: includes/admin-settings.php:213
+msgid "Fixed amount"
+msgstr "Fester Betrag"
+
+#: includes/admin-settings.php:220
+msgid "Deposit Value"
+msgstr "Kautionswert"
+
+#: includes/admin-settings.php:226
+msgid "A percentage (0-100) or a fixed price amount, depending on the deposit type selected above."
+msgstr "Ein Prozentsatz (0-100) oder ein fester Preisbetrag, je nach der oben ausgewählten Kautionsart."
+
+#: includes/admin-settings.php:232
 msgid "Price Display"
 msgstr "Preisanzeige"
 
-#: includes/admin-settings.php:198
+#: includes/admin-settings.php:237
 msgid "Decimals"
 msgstr "Nachkommastellen"
 
-#: includes/admin-settings.php:207
+#: includes/admin-settings.php:246
 msgid "Decimal Separator"
 msgstr "Dezimaltrennzeichen"
 
-#: includes/admin-settings.php:216
+#: includes/admin-settings.php:255
 msgid "Thousand Separator"
 msgstr "Tausendertrennzeichen"
 
-#: includes/admin-settings.php:225
+#: includes/admin-settings.php:264
 msgid "Prefix"
 msgstr "Präfix"
 
-#: includes/admin-settings.php:234
+#: includes/admin-settings.php:273
 msgid "Suffix"
 msgstr "Suffix"
 
-#: includes/admin-settings.php:243
+#: includes/admin-settings.php:282
 msgid "Save"
 msgstr "Speichern"
 

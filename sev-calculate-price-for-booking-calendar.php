@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name:       SEV Calculate Price for Booking Calendar
- * Description:       Calculates and displays the booking price for Booking Calendar (WPBC) based on the number of selected days and configurable per-day price tiers, filling the [cost_hint] shortcode that Booking Calendar Free leaves inactive.
- * Version:           1.0.0
+ * Description:       Calculates and displays the booking price and deposit for Booking Calendar (WPBC) based on the number of selected days, configurable per-day price tiers, and a fixed or percentage-based deposit, filling the [cost_hint] and [deposit_hint] shortcodes that Booking Calendar Free leaves inactive.
+ * Version:           1.1.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Author:            sevmatic
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SEV_BCP_VERSION', '1.0.0' );
+define( 'SEV_BCP_VERSION', '1.1.0' );
 define( 'SEV_BCP_FILE', __FILE__ );
 define( 'SEV_BCP_URL', plugin_dir_url( __FILE__ ) );
 define( 'SEV_BCP_PATH', plugin_dir_path( __FILE__ ) );

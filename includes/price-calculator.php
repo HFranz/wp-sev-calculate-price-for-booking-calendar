@@ -68,6 +68,32 @@ function sevmatic_bcp_calculate_total_price( array $tiers, int $days ): ?float {
 }
 
 /**
+ * Calculates the deposit amount for a booking.
+ *
+ * @param float|null $total_price Total booking price, as returned by sevmatic_bcp_calculate_total_price() (or null if it couldn't be calculated).
+ * @param string     $mode        'fixed' for a flat amount, 'percentage' for a share of $total_price.
+ * @param float      $value       The fixed amount, or the percentage (0-100).
+ *
+ * @return float|null Deposit amount, or null when it can't be determined (percentage mode without a total price, or an unknown mode).
+ */
+function sevmatic_bcp_calculate_deposit( ?float $total_price, string $mode, float $value ): ?float {
+
+	if ( 'fixed' === $mode ) {
+		return max( 0.0, $value );
+	}
+
+	if ( 'percentage' === $mode ) {
+		if ( null === $total_price ) {
+			return null;
+		}
+
+		return $total_price * $value / 100;
+	}
+
+	return null;
+}
+
+/**
  * Formats a price amount for display.
  *
  * @param float                                                                            $amount Amount to format.
