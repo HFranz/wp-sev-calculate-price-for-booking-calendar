@@ -15,8 +15,8 @@ add_action(
 	'admin_menu',
 	function () {
 		add_options_page(
-			__( 'Booking Preisstaffel', 'sev-calculate-price-for-booking-calendar' ),
-			__( 'Booking Preisstaffel', 'sev-calculate-price-for-booking-calendar' ),
+			__( 'Booking Price Tiers', 'sev-calculate-price-for-booking-calendar' ),
+			__( 'Booking Price Tiers', 'sev-calculate-price-for-booking-calendar' ),
 			'manage_options',
 			SEVMATIC_BCP_SETTINGS_PAGE_SLUG,
 			'sevmatic_bcp_render_settings_page'
@@ -80,7 +80,7 @@ function sevmatic_bcp_maybe_save_settings(): void {
 		function () {
 			?>
 			<div class="notice notice-success is-dismissible">
-				<p><?php esc_html_e( 'Preisstaffel gespeichert.', 'sev-calculate-price-for-booking-calendar' ); ?></p>
+				<p><?php esc_html_e( 'Price tiers saved.', 'sev-calculate-price-for-booking-calendar' ); ?></p>
 			</div>
 			<?php
 		}
@@ -110,7 +110,7 @@ function sevmatic_bcp_render_tier_row( int $index, ?array $tier = null ): void {
 			<input type="number" min="1" step="1" class="small-text"
 				   name="sevmatic_bcp[tiers][<?php echo esc_attr( $index ); ?>][to]"
 				   value="<?php echo esc_attr( $to ); ?>"
-				   placeholder="<?php esc_attr_e( 'unbegrenzt', 'sev-calculate-price-for-booking-calendar' ); ?>" />
+				   placeholder="<?php esc_attr_e( 'unlimited', 'sev-calculate-price-for-booking-calendar' ); ?>" />
 		</td>
 		<td>
 			<input type="number" min="0" step="0.01" class="small-text"
@@ -119,7 +119,7 @@ function sevmatic_bcp_render_tier_row( int $index, ?array $tier = null ): void {
 		</td>
 		<td>
 			<button type="button" class="button sevmatic-bcp-remove-row">
-				<?php esc_html_e( 'Entfernen', 'sev-calculate-price-for-booking-calendar' ); ?>
+				<?php esc_html_e( 'Remove', 'sev-calculate-price-for-booking-calendar' ); ?>
 			</button>
 		</td>
 	</tr>
@@ -140,12 +140,12 @@ function sevmatic_bcp_render_settings_page(): void {
 	$settings = sevmatic_bcp_get_settings();
 	?>
 	<div class="wrap sevmatic-bcp-settings">
-		<h1><?php esc_html_e( 'Booking Preisstaffel', 'sev-calculate-price-for-booking-calendar' ); ?></h1>
+		<h1><?php esc_html_e( 'Booking Price Tiers', 'sev-calculate-price-for-booking-calendar' ); ?></h1>
 
 		<?php if ( ! sevmatic_bcp_wpbc_is_available() ) : ?>
 			<div class="notice notice-warning">
 				<p>
-					<?php esc_html_e( 'Das Plugin "Booking Calendar" ist nicht aktiv. Die Preisberechnung ist aktuell inaktiv.', 'sev-calculate-price-for-booking-calendar' ); ?>
+					<?php esc_html_e( 'The "Booking Calendar" plugin is not active. Price calculation is currently inactive.', 'sev-calculate-price-for-booking-calendar' ); ?>
 				</p>
 			</div>
 		<?php endif; ?>
@@ -153,7 +153,7 @@ function sevmatic_bcp_render_settings_page(): void {
 		<p>
 			<?php
 			esc_html_e(
-				'Definiere hier, wie viel eine Buchung pro Tag kostet. Für die Anzahl der gebuchten Tage wird die passende Preisstufe verwendet und mit der Tagesanzahl multipliziert. Der berechnete Preis wird im Buchungsformular über den Platzhalter [cost_hint] angezeigt.',
+				'Define here how much a booking costs per day. The number of booked days determines which price tier applies, and the total is that tier\'s rate multiplied by the number of days. The calculated price is shown in the booking form via the [cost_hint] placeholder.',
 				'sev-calculate-price-for-booking-calendar'
 			);
 			?>
@@ -162,14 +162,14 @@ function sevmatic_bcp_render_settings_page(): void {
 		<form method="post">
 			<?php wp_nonce_field( SEVMATIC_BCP_NONCE_ACTION, SEVMATIC_BCP_NONCE_NAME ); ?>
 
-			<h2><?php esc_html_e( 'Preisstufen', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
+			<h2><?php esc_html_e( 'Price Tiers', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
 
 			<table class="widefat sevmatic-bcp-tiers-table">
 				<thead>
 					<tr>
-						<th><?php esc_html_e( 'Von Tag', 'sev-calculate-price-for-booking-calendar' ); ?></th>
-						<th><?php esc_html_e( 'Bis Tag', 'sev-calculate-price-for-booking-calendar' ); ?></th>
-						<th><?php esc_html_e( 'Preis pro Tag', 'sev-calculate-price-for-booking-calendar' ); ?></th>
+						<th><?php esc_html_e( 'From Day', 'sev-calculate-price-for-booking-calendar' ); ?></th>
+						<th><?php esc_html_e( 'To Day', 'sev-calculate-price-for-booking-calendar' ); ?></th>
+						<th><?php esc_html_e( 'Price per Day', 'sev-calculate-price-for-booking-calendar' ); ?></th>
 						<th></th>
 					</tr>
 				</thead>
@@ -182,20 +182,20 @@ function sevmatic_bcp_render_settings_page(): void {
 
 			<p>
 				<button type="button" class="button" id="sevmatic-bcp-add-row">
-					<?php esc_html_e( 'Preisstufe hinzufügen', 'sev-calculate-price-for-booking-calendar' ); ?>
+					<?php esc_html_e( 'Add price tier', 'sev-calculate-price-for-booking-calendar' ); ?>
 				</button>
 			</p>
 
 			<p class="description">
-				<?php esc_html_e( '"Bis Tag" leer lassen für "unbegrenzt" (z. B. "ab 20 Tagen").', 'sev-calculate-price-for-booking-calendar' ); ?>
+				<?php esc_html_e( 'Leave "To Day" empty for "unlimited" (e.g. "20 days or more").', 'sev-calculate-price-for-booking-calendar' ); ?>
 			</p>
 
-			<h2><?php esc_html_e( 'Preisanzeige', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
+			<h2><?php esc_html_e( 'Price Display', 'sev-calculate-price-for-booking-calendar' ); ?></h2>
 
 			<table class="form-table">
 				<tr>
 					<th scope="row">
-						<label for="sevmatic-bcp-decimals"><?php esc_html_e( 'Nachkommastellen', 'sev-calculate-price-for-booking-calendar' ); ?></label>
+						<label for="sevmatic-bcp-decimals"><?php esc_html_e( 'Decimals', 'sev-calculate-price-for-booking-calendar' ); ?></label>
 					</th>
 					<td>
 						<input type="number" min="0" max="4" step="1" id="sevmatic-bcp-decimals"
@@ -204,7 +204,7 @@ function sevmatic_bcp_render_settings_page(): void {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="sevmatic-bcp-decimal-sep"><?php esc_html_e( 'Dezimaltrennzeichen', 'sev-calculate-price-for-booking-calendar' ); ?></label>
+						<label for="sevmatic-bcp-decimal-sep"><?php esc_html_e( 'Decimal Separator', 'sev-calculate-price-for-booking-calendar' ); ?></label>
 					</th>
 					<td>
 						<input type="text" id="sevmatic-bcp-decimal-sep" maxlength="1"
@@ -213,7 +213,7 @@ function sevmatic_bcp_render_settings_page(): void {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="sevmatic-bcp-thousand-sep"><?php esc_html_e( 'Tausendertrennzeichen', 'sev-calculate-price-for-booking-calendar' ); ?></label>
+						<label for="sevmatic-bcp-thousand-sep"><?php esc_html_e( 'Thousand Separator', 'sev-calculate-price-for-booking-calendar' ); ?></label>
 					</th>
 					<td>
 						<input type="text" id="sevmatic-bcp-thousand-sep" maxlength="1"
@@ -222,11 +222,11 @@ function sevmatic_bcp_render_settings_page(): void {
 				</tr>
 				<tr>
 					<th scope="row">
-						<label for="sevmatic-bcp-prefix"><?php esc_html_e( 'Präfix', 'sev-calculate-price-for-booking-calendar' ); ?></label>
+						<label for="sevmatic-bcp-prefix"><?php esc_html_e( 'Prefix', 'sev-calculate-price-for-booking-calendar' ); ?></label>
 					</th>
 					<td>
 						<input type="text" id="sevmatic-bcp-prefix"
-							   name="sevmatic_bcp[prefix]" value="<?php echo esc_attr( $settings['prefix'] ); ?>" class="regular-text" placeholder="z. B. &euro;&nbsp;" />
+							   name="sevmatic_bcp[prefix]" value="<?php echo esc_attr( $settings['prefix'] ); ?>" class="regular-text" placeholder="e.g. &euro;&nbsp;" />
 					</td>
 				</tr>
 				<tr>
@@ -235,12 +235,12 @@ function sevmatic_bcp_render_settings_page(): void {
 					</th>
 					<td>
 						<input type="text" id="sevmatic-bcp-suffix"
-							   name="sevmatic_bcp[suffix]" value="<?php echo esc_attr( $settings['suffix'] ); ?>" class="regular-text" placeholder="z. B. &nbsp;&euro;" />
+							   name="sevmatic_bcp[suffix]" value="<?php echo esc_attr( $settings['suffix'] ); ?>" class="regular-text" placeholder="e.g. &nbsp;&euro;" />
 					</td>
 				</tr>
 			</table>
 
-			<?php submit_button( __( 'Speichern', 'sev-calculate-price-for-booking-calendar' ), 'primary', 'sevmatic_bcp_save' ); ?>
+			<?php submit_button( __( 'Save', 'sev-calculate-price-for-booking-calendar' ), 'primary', 'sevmatic_bcp_save' ); ?>
 		</form>
 
 		<template id="sevmatic-bcp-row-template">
